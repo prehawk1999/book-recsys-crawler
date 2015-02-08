@@ -10,13 +10,14 @@ from scrapy.utils.url import urljoin_rfc
 from doubanbook.items import MemberItem, GroupItem
 
 # 填入需要抓取的小组id
-ids = ['BigData'] # MLPR 27885 BigData dm 503043
+ids = ['ns'] # MLPR 27885 BigData dm 503043 325827 User-behavior socialcomputing
 
 class GroupMemsSpider(CrawlSpider):
     
     name = "group_mems"
     allowed_domains = ["douban.com"]
     start_urls = ['http://www.douban.com/group/%s/members' % x for x in ids]
+    print start_urls[0]
     rules = [
             # 小组翻页规则
             Rule(LxmlLinkExtractor(allow = (r'/group/\w+/members\?start=\d+.*', ), unique = False), 
@@ -27,32 +28,28 @@ class GroupMemsSpider(CrawlSpider):
     users = set() # users = set()
     prime_size = 1
     user_count = 0
-
-    def get_members(self, response):
-        sel = Selector(response) 
-        #print self.users
-        for mem in sel.xpath('//div[@class="member-list"]//div[@class="name"]/a/@href'):
-            m = mem.re('http://www.douban.com/group/people/(\w+)')
-            if m: 
-                if m[0] not in self.users:
-                    self.users.add(m[0])
-        self.log('======= %d / %d members fetched!' % (len(self.users) - self.prime_size, self.user_count), 
-            level=scrapy.log.INFO)
+    crawl_count = 0
 
     def parse_start_url(self, response):
         sel = Selector(response)
         # self.group_id = sel.xpath('//*[@id="content"]//div[@class="title"]/a/@href').re(r'http://www.douban.com/group/(\w+)/.*')[0]
-        self.user_count = int(sel.xpath('//*[@id="content"]//span[@class="count"]/text()').re('(\d+)')[0])
-        self.get_members(response)
+        #self.user_count = int(sel.xpath('//*[@id="content"]//span[@class="count"]/text()').re('(\d+)')[0])
+        self.parse_group_page(response)
 
     def parse_group_page(self, response):
-        self.get_members(response)
-        #if self.user_count - len(self.users) <= 10:
-        for i in self.users:
-            # url = 'http://book.douban.com/people/%s/' % i
-            mem = MemberItem()
-            mem['user_id'] = i
-            mem['read']    = 0
-            mem['crawled'] = 0
-            yield mem
+        sel = Selector(response) 
+        #print self.users
+        for mem in sel.xpath('//div[@class="member-list"]//div[@class="name"]/a/@href'):
+            self.crawl_count += 1
+            m = mem.re('http://www.douban.com/group/people/(\w+)')
+            if m and m[0] not in self.users:
+                self.users.add(m[0])
+                mem = MemberItem()
+                mem['user_id'] = m[0]
+                mem['read']    = 0
+                mem['crawled'] = 0
+                yield mem
+        self.log('%d new users got(unique), totally %d members crawled' % (len(self.users) - self.prime_size, self.crawl_count), 
+            level=scrapy.log.INFO)
+
 

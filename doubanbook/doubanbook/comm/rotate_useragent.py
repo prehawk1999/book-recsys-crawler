@@ -1,7 +1,4 @@
 # -*-coding:utf-8-*-
-
-from scrapy import log
-
 """避免被ban策略之一：使用useragent池。
 
 使用注意：需在settings.py中进行相应的设置。
@@ -20,7 +17,7 @@ class RotateUserAgentMiddleware(UserAgentMiddleware):
         if ua:
             request.headers.setdefault('User-Agent', ua)
 
-    #the default user_agent_list composes chrome,I E,firefox,Mozilla,opera,netscape
+    #the default user_agent_list composes chrome,IE,firefox,Mozilla,opera,netscape
     #for more user agent strings,you can find it in http://www.useragentstring.com/pages/useragentstring.php
     user_agent_list = [\
         "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 "

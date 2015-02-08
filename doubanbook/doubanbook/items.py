@@ -20,7 +20,6 @@ class MemberItem(scrapy.Item):
     # books = scrapy.Field() # a list of bookid 
     # crawled = scrapy.Field()
     
-
 class RateItem(scrapy.Item):
     user_id = scrapy.Field()
     book_id = scrapy.Field()
@@ -31,3 +30,9 @@ class RateItem(scrapy.Item):
 
 class BookItem(scrapy.Item):
     info = scrapy.Field()
+
+
+class HistoryItem(scrapy.Item):
+    user_id  = scrapy.Field()
+    collects = scrapy.Field()
+    errstr   = scrapy.Field()

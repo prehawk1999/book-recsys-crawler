@@ -12,8 +12,8 @@ BOT_NAME = 'doubanbook'
 
 SPIDER_MODULES = ['doubanbook.spiders']
 NEWSPIDER_MODULE = 'doubanbook.spiders'
-DOWNLOAD_DELAY = 1	 
-COOKIES_ENABLED = True
+DOWNLOAD_DELAY = 1
+COOKIES_ENABLED = False
 CONCURRENT_REQUESTS = 500
 
 
@@ -24,7 +24,7 @@ CONCURRENT_REQUESTS = 500
 LOG_LEVEL = 'INFO'
 DOWNLOADER_MIDDLEWARES = {
         'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware' : None,
-        'doubanbook.comm.rotate_useragent.RotateUserAgentMiddleware' :400
+        'doubanbook.comm.rotate_useragent.RotateUserAgentMiddleware' :400,
     }
 
 ITEM_PIPELINES = {
